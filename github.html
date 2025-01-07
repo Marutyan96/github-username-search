@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #user-info {
+            margin-top: 20px;
+        }
+        img {
+            border-radius: 50%;
+            max-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Информация о пользователе GitHub</h1>
+    <input type="text" id="username" placeholder="Введите логин GitHub" required>
+    <button id="search-btn">Поиск</button>
+
+    <div id="user-info"></div>
+
+    <script>
+        document.getElementById("search-btn").onclick = function () {
+            const username = document.getElementById("username").value;
+            const url = `https://api.github.com/users/${username}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Пользователь не найден');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const userInfo = `
+                        <div>
+                            <img src="${data.avatar_url}" alt="${data.name}">
+                            <h2>${data.name || 'Нет имени'}</h2>
+                            <p>Логин: ${data.login}</p>
+                            <p>Ссылка на блог: ${data.blog || 'Нет данных'}</p>
+                            <p>Город: ${data.location || 'Нет данных'}</p>
+                            <p>Почта: ${data.email || 'Нет данных'}</p>
+                            <p>Подписчики: ${data.followers}</p>
+                            <p>Подписки: ${data.following}</p>
+                        </div>
+                    `;
+                    document.getElementById("user-info").innerHTML = userInfo;
+                })
+                .catch(error => {
+                    document.getElementById("user-info").innerHTML = `<p>${error.message}</p>`;
+                });
+        };
+    </script>
+</body>
+</html>
